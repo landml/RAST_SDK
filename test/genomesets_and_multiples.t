@@ -1,4 +1,6 @@
 use strict;
+use warnings;
+
 use Data::Dumper;
 use Test::More;
 use Test::Exception;
@@ -62,7 +64,7 @@ if ($DEBUG ne 'Y') {
 	($tmp_obj, $genome_ref2) = prepare_gbff($genome_gbff_name2,$genome_obj_name2);
 	my $genome_gbff_name3 = "GCF_000287295.1_ASM28729v1_genomic.gbff";
 	($tmp_obj, $genome_ref3) = prepare_gbff($genome_gbff_name3,$genome_obj_name3);
-	
+
 }
 
 my $params={"input_genomes"=>[$genome_ref1,$genome_ref2],

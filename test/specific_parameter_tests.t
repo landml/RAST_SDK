@@ -1,4 +1,6 @@
 use strict;
+use warnings;
+
 use Data::Dumper;
 use Test::More;
 use Test::Exception;
@@ -45,7 +47,7 @@ if (exists $list{carson} && $list{carson} > 0) {
 	my $genome_obj_name = "Carsonella";
 
 	my $params={
-			"input_genome"=>$genome_ref, 
+			"input_genome"=>$genome_ref,
              "call_features_rRNA_SEED"=>'1',
              "call_features_tRNA_trnascan"=>'1',
              "annotate_proteins_similarity"=>'1',
@@ -127,7 +129,7 @@ if (exists $list{strepp} && $list{strepp} > 0) {
 	print "PURPOSE:\n";
 	print "    1.  Streptococcus pneumoniae is a test for the strep-pneumoniae specific repeat\n";
 	print "    2.  Streptococcus pneumoniae should also have SEED repeats\n";
-   
+
 	my $genome_obj_name = "Streptococcus_pneumoniae_D39";
 	my $genome_gbff_name = "Streptococcus_pneumoniae_D39.gbff";
 	my $genome_ref = "15792/103507/1";
@@ -154,7 +156,7 @@ if (exists $list{streps} && $list{streps} > 0) {
 	my $genome_obj_name = "Streptococcus_suis";
 	my $genome_gbff_name = "Streptococcus_suis.gbff";
 	my $genome_ref = '15792/60950/1';
-	
+
 	my $params={
 	     "input_genome"=>$genome_ref,
 	     "call_features_strep_suis_repeat"=>'1',
@@ -166,7 +168,7 @@ if (exists $list{streps} && $list{streps} > 0) {
 
 sub annotate {
 	my ($genome_obj_name,$genome_gbff_name, $genome_ref, $params) = @_;
-	
+
 	unless ($DEBUG eq 'Y')
 	{
 		my $tmp_genome_obj;
@@ -176,7 +178,7 @@ sub annotate {
 
 	my $num_func_in  = 0;
 	my $num_func_out = 0;
-	my %counts = ('num_new' => 0, 'num_diff' => 0, 
+	my %counts = ('num_new' => 0, 'num_diff' => 0,
 		'seleno' => 0, 'crispr' => 0, 'prophage' => 0, 'pyrro' => 0,'repeat' => 0);
 
 	lives_ok {
@@ -193,7 +195,7 @@ sub annotate {
 		print "number of returned features = ".scalar  @{$genome_obj->{features}}."\n";
 		print "number of returned non-coding features = ".scalar  @{$genome_obj->{non_coding_features}}."\n";
 		$num_func_out = scalar  @{$genome_obj->{features}} + @{$genome_obj->{non_coding_features}};
-	
+
 		for (my $i=0; $i < @{$genome_obj->{features}}; $i++) {
 			my $ftr = $genome_obj->{features}->[$i];
 			my $func      = defined($ftr->{function}) ? $ftr->{function} : "";
@@ -204,7 +206,7 @@ sub annotate {
 
 			if ($ftr->{ontology_terms}) {
 				#print Dumper $ftr->{ontology_terms}->{SSO};
-				my @roles = keys(%{$ftr->{ontology_terms}->{SSO}}); 
+				my @roles = keys(%{$ftr->{ontology_terms}->{SSO}});
 				foreach (@roles) {
 					$counts{seleno}++ if ($_ =~ /SSO:000009304/);
 					$counts{pyrro}++  if ($_ =~ /SSO:000009291/);
@@ -228,7 +230,7 @@ sub annotate {
 				$counts{repeat}++;
 			}
 		}
-	
+
 		print "**** Number of features post-annotation = $num_func_out\n";
 		$counts{num_new} = $num_func_out - $num_func_in;
 	} "Annotate $genome_obj_name";

@@ -1,4 +1,6 @@
 use strict;
+use warnings;
+
 use Data::Dumper;
 use Test::Deep;
 use Test::More;
@@ -51,7 +53,7 @@ lives_ok {
 	my $ret = &make_impl_call("RAST_SDK.annotate_genome", $params);
 	my $genome_ref = get_ws_name() . "/" . $genome_obj_name;
 	my $genome_obj = $ws_client->get_objects([{ref=>$genome_ref}])->[0]->{data};
-    
+
 	print "\n\nOUTPUT OBJECT DOMAIN = $genome_obj->{domain}\n";
 	print "OUTPUT OBJECT G_CODE = $genome_obj->{genetic_code}\n";
 
@@ -79,7 +81,7 @@ lives_ok {
 	my $ret = &make_impl_call("RAST_SDK.annotate_genome", $params_copy);
 	my $genome_ref = get_ws_name() . "/" . $genome_obj_name;
 	my $genome_obj = $ws_client->get_objects([{ref=>$genome_ref}])->[0]->{data};
-    
+
 	print "\n\nOUTPUT OBJECT DOMAIN = $genome_obj->{domain}\n";
 	print "OUTPUT OBJECT G_CODE = $genome_obj->{genetic_code}\n";
 
@@ -109,7 +111,7 @@ lives_ok {
 	my $data = $ws_client->get_objects([{ref=>$genome_set_obj}])->[0]->{refs};
 	my $number_genomes = scalar @{ $data};
     ok($number_genomes == 1, "Input: One Assembly. Output: $number_genomes in output GenomeSet");
-    
+
     my $genome_obj = $ws_client->get_objects([{ref=>$data->[0]}])->[0]->{data};
     ok($genome_obj->{scientific_name} eq "unknown taxon", "Sci name is correct");
     ok(!defined($genome_obj->{taxon_assignments}), "Taxon assignments is undefined");
@@ -145,7 +147,7 @@ lives_ok {
 	my $data = $ws_client->get_objects([{ref=>$genome_set_obj}])->[0]->{refs};
 	my $number_genomes = scalar @{ $data};
     ok($number_genomes == 1, "Input: One Assembly. Output: $number_genomes in output GenomeSet");
-    
+
     my $genome_obj = $ws_client->get_objects([{ref=>$data->[0]}])->[0]->{data};
     ok($genome_obj->{scientific_name} eq "Metarhizium sp. MJH 2018c", "Sci name is correct");
     cmp_deeply($genome_obj->{taxon_assignments}, {'ncbi' => '2448083'},
@@ -167,7 +169,7 @@ lives_ok {
 lives_ok {
     print("######## Running RAST annotation fail with bad RE input ########\n");
     my $params_copy = { %$params };
-    $params_copy->{ncbi_taxon_id} = 32; 
+    $params_copy->{ncbi_taxon_id} = 32;
     $params_copy->{relation_engine_timestamp_ms} = 'Sept 19 2020';  # oops
     eval {
         &make_impl_call("RAST_SDK.annotate_genome", $params_copy);
@@ -194,22 +196,3 @@ lives_ok {
 } "Fail bad taxon ID";
 
 done_testing(32);
-
-my $err = undef;
-if ($@) {
-    $err = $@;
-}
-eval {
-    if (defined($ws_name)) {
-        $ws_client->delete_workspace({workspace => $ws_name});
-        print("Test workspace was deleted\n");
-    }
-};
-if (defined($err)) {
-    if(ref($err) eq "Bio::KBase::Exceptions::KBaseException") {
-        die("Error while running tests: " . $err->trace->as_string);
-    } else {
-        die $err;
-    }
-}
-

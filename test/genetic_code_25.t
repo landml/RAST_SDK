@@ -1,4 +1,6 @@
 use strict;
+use warnings;
+
 use Data::Dumper;
 use Test::More;
 use Test::Exception;
@@ -47,7 +49,7 @@ lives_ok {
 	my $ret = &make_impl_call("RAST_SDK.annotate_genome", $params);
 	my $genome_ref = get_ws_name() . "/" . $genome_obj_name;
 	my $genome_obj = $ws_client->get_objects([{ref=>$genome_ref}])->[0]->{data};
-    
+
 	print "\n\nOUTPUT OBJECT DOMAIN = $genome_obj->{domain}\n";
 	print "OUTPUT OBJECT G_CODE = $genome_obj->{genetic_code}\n";
 	print "OUTPUT SCIENTIFIC NAME = $genome_obj->{scientific_name}\n";

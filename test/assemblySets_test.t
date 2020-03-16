@@ -1,4 +1,6 @@
 use strict;
+use warnings;
+
 use Data::Dumper;
 use Test::More;
 use Test::Exception;
@@ -52,10 +54,10 @@ my $genome_set_name = "New_GenomeSet";
 if ($DEBUG ne 'Y') {
 	$assembly_obj_name1 = "bogus.fna";
 	$assembly_ref1 = prepare_assembly($assembly_obj_name1);
-		
+
 	$assembly_obj_name2 = "bogus2.fna";
 	$assembly_ref2 = prepare_assembly($assembly_obj_name2);
-	
+
 	$assembly_obj_name3 = "bogus2.fna";
 	$assembly_ref3 = prepare_assembly($assembly_obj_name2);
 }
@@ -144,7 +146,7 @@ lives_ok {
 		my $data = $ws_client->get_objects([{ref=>$genome_set_obj}])->[0]->{refs};
 		my $number_genomes = scalar @{ $data};
     	ok($number_genomes = 1, "Input: Two redundant. Output: $number_genomes in output GenomeSet");
-		
+
 	} else {
 		1;
 	}
