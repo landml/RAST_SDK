@@ -2,7 +2,7 @@ package RAST_SDK::RAST_SDKImpl;
 use strict;
 use Bio::KBase::Exceptions;
 # Use Semantic Versioning (2.0.0-rc.1)
-# http://semver.org 
+# http://semver.org
 our $VERSION = '0.1.7';
 our $GIT_URL = 'https://github.com/kbaseapps/RAST_SDK';
 our $GIT_COMMIT_HASH = '805abca81a1515cd2766b0b74381cdb0de15d09d';
@@ -40,48 +40,48 @@ use anno_utils;
 
 #Initialization function for call
 sub util_initialize_call {
-	my ($self,$params,$ctx) = @_;
-	Bio::KBase::kbaseenv::initialize_call($ctx);
-	$Bio::KBase::GenomeAnnotation::Service::CallContext = $ctx;
-	Bio::KBase::kbaseenv::ac_client({refresh => 1});
-	Bio::KBase::kbaseenv::ga_client({refresh => 1});
-	Bio::KBase::kbaseenv::gfu_client({refresh => 1});
-	Bio::KBase::kbaseenv::su_client({refresh => 1});
-	return $params;
+    my ($self,$params,$ctx) = @_;
+    Bio::KBase::kbaseenv::initialize_call($ctx);
+    $Bio::KBase::GenomeAnnotation::Service::CallContext = $ctx;
+    Bio::KBase::kbaseenv::ac_client({refresh => 1});
+    Bio::KBase::kbaseenv::ga_client({refresh => 1});
+    Bio::KBase::kbaseenv::gfu_client({refresh => 1});
+    Bio::KBase::kbaseenv::su_client({refresh => 1});
+    return $params;
 }
 
 sub util_version {
-	my ($self) = @_;
-	return $VERSION;
+    my ($self) = @_;
+    return $VERSION;
 }
 
 sub util_log {
-	my($self,$message) = @_;
-	print $message."\n";
+    my($self,$message) = @_;
+    print $message."\n";
 }
 
 sub util_get_genome {
-	my ($self,$workspace,$genomeid) = @_;
-	my $ref = Bio::KBase::kbaseenv::buildref($workspace,$genomeid);
-	my $output = Bio::KBase::kbaseenv::ga_client()->get_genome_v1({
-		genomes => [{
-			"ref" => $ref
-		}],
-		ignore_errors => 1,
-		no_data => 0,
-		no_metadata => 0,
-		downgrade => 0
-	});
-	my $genome = $output->{genomes}->[0];
-	$genome->{data}->{'_reference'} = $genome->{info}->[6]."/".$genome->{info}->[0]."/".$genome->{info}->[4];
-	print("Genome $genome->{data}->{'_reference'} downloaded\n");
-	return $genome->{data};
+    my ($self,$workspace,$genomeid) = @_;
+    my $ref = Bio::KBase::kbaseenv::buildref($workspace,$genomeid);
+    my $output = Bio::KBase::kbaseenv::ga_client()->get_genome_v1({
+        genomes => [{
+            "ref" => $ref
+        }],
+        ignore_errors => 1,
+        no_data => 0,
+        no_metadata => 0,
+        downgrade => 0
+    });
+    my $genome = $output->{genomes}->[0];
+    $genome->{data}->{'_reference'} = $genome->{info}->[6]."/".$genome->{info}->[0]."/".$genome->{info}->[4];
+    print("Genome $genome->{data}->{'_reference'} downloaded\n");
+    return $genome->{data};
 }
 
 sub max_contigs {
-	my $max_contigs = 10000;
-	print ("Setting maximum contigs to $max_contigs\n");
-	return $max_contigs;
+    my $max_contigs = 10000;
+    print ("Setting maximum contigs to $max_contigs\n");
+    return $max_contigs;
 }
 
 sub util_get_contigs {
@@ -240,7 +240,7 @@ sub annotate_process {
                 }
                 $oldtype->{$ftr->{id}} = $ftr->{type};
                 #
-                #	Count the input feature types
+                #   Count the input feature types
                 #
                 if (exists $types{"Non-coding ".$ftr->{type}}) {
                     $types{"Non-coding ".$ftr->{type}} += 1;
@@ -694,380 +694,380 @@ sub annotate_process {
     my $count = 0;
 
 #
-#	Move non-coding features from features to non_coding_features
-#	They can have more than one location and they need md5 and dna_sequence_length
+#   Move non-coding features from features to non_coding_features
+#   They can have more than one location and they need md5 and dna_sequence_length
 #
-#	print "Array size =".scalar @{$genome->{features}}."\n";
-#	print "Number to splice out = ".scalar @splice_list."\n";
-	foreach my $key (reverse @splice_list) {
-		if ($key =~ /\D/ ) {
-			print "INVALID:size=".scalar @{$genome->{features}}."\n";
-#			print Dumper $key;
-		}
-		else {
-			my $ftr = $genome->{features}->[$key];
-			if (defined($ftr->{location})) {
-				$ftr->{dna_sequence_length} = 0;
-				$ftr->{md5} = '';
-				for (my $i=0; $i < scalar @{$ftr->{location}}; $i++) {
-					$ftr->{location}->[$i]->[1]  = $ftr->{location}->[$i]->[1]+0;
-					$ftr->{location}->[$i]->[3]  = $ftr->{location}->[$i]->[3]+0;
-					$ftr->{dna_sequence_length} += $ftr->{location}->[$i]->[3]+0;
-				}
-			}
-			delete  $ftr->{feature_creation_event};
-			my $non = splice(@{$genome->{features}},$key,1);
-			push(@{$genome->{non_coding_features}}, $non);
+#   print "Array size =".scalar @{$genome->{features}}."\n";
+#   print "Number to splice out = ".scalar @splice_list."\n";
+    foreach my $key (reverse @splice_list) {
+        if ($key =~ /\D/ ) {
+            print "INVALID:size=".scalar @{$genome->{features}}."\n";
+#           print Dumper $key;
+        }
+        else {
+            my $ftr = $genome->{features}->[$key];
+            if (defined($ftr->{location})) {
+                $ftr->{dna_sequence_length} = 0;
+                $ftr->{md5} = '';
+                for (my $i=0; $i < scalar @{$ftr->{location}}; $i++) {
+                    $ftr->{location}->[$i]->[1]  = $ftr->{location}->[$i]->[1]+0;
+                    $ftr->{location}->[$i]->[3]  = $ftr->{location}->[$i]->[3]+0;
+                    $ftr->{dna_sequence_length} += $ftr->{location}->[$i]->[3]+0;
+                }
+            }
+            delete  $ftr->{feature_creation_event};
+            my $non = splice(@{$genome->{features}},$key,1);
+            push(@{$genome->{non_coding_features}}, $non);
 
-			$count++;
-		}
+            $count++;
+        }
 
-	}
+    }
 
-	if (defined($contigobj) && defined($contigobj->{contigs}) && scalar(@{$contigobj->{contigs}})>0 ) {
-		$genome->{num_contigs} = @{$contigobj->{contigs}};
-		$genome->{md5} = $contigobj->{md5};
-	}
-	#Getting the seed ontology dictionary
-	#Sam: I need to build the PlantSEED ontology and use it here
-	my $output = Bio::KBase::kbaseenv::get_objects([{
-		workspace => "KBaseOntology",
-		name => "seed_subsystem_ontology"
-	}]);
-	#Building a hash of standardized seed function strings
-	my $funchash = {};
-	foreach my $term (keys(%{$output->[0]->{data}->{term_hash}})) {
-		my $rolename = lc($output->[0]->{data}->{term_hash}->{$term}->{name});
-		$rolename =~ s/[\d\-]+\.[\d\-]+\.[\d\-]+\.[\d\-]+//g;
-		$rolename =~ s/\s//g;
-		$rolename =~ s/\#.*$//g;
-		$funchash->{$rolename} = $output->[0]->{data}->{term_hash}->{$term};
-	}
-	my $newftrs = 0;
-	my $newncfs = 0;
-	my $update_cdss = 'N';
-	my $proteins = 0;
-	my $others = 0;
-	my $seedfunctions = 0;
-	my $genomefunchash;
-	my $seedfunchash;
-	my $advancedmessage = '';
-	%types = ();
-	if (defined($genome->{features})) {
-		for (my $i=0; $i < @{$genome->{features}}; $i++) {
-			my $ftr = $genome->{features}->[$i];
-			if (defined($genehash) && !defined($genehash->{$ftr->{id}})) {
-				# Let's count number of features with functions updated by RAST service.
-				# If function is not set we treat it as empty string to avoid perl warning.
-				$newftrs++;
-				my $func = $ftr->{function};
-				if (not defined($func)) {
-					$func = "";
-				}
-				if ($ftr->{type} eq 'CDS' && !defined($genome->{cdss}->[$i])) {
-					#Some of the optional gene finders don't respect new genome format
-					#They may not have the cdss
-					$update_cdss = 'Y';
-				}
-			} else {
-				$num_coding++;
-			}
-			if (!defined($ftr->{type}) && $ftr->{id} =~ m/(\w+)\.\d+$/) {
-				$ftr->{type} = $1;
-			}
-			if (defined($ftr->{protein_translation})) {
-				$ftr->{protein_translation_length} = length($ftr->{protein_translation})+0;
-				$ftr->{md5} = Digest::MD5::md5_hex($ftr->{protein_translation});
-				$proteins++;
-			} else {
-				$others++;
-			}
-			if (defined($ftr->{dna_sequence})) {
-				$ftr->{dna_sequence_length} = length($ftr->{dna_sequence})+0;
-			}
-			if (defined($ftr->{quality}->{weighted_hit_count})) {
-				$ftr->{quality}->{weighted_hit_count} = $ftr->{quality}->{weighted_hit_count}+0;
-			}
-			if (defined($ftr->{quality}->{hit_count})) {
-				$ftr->{quality}->{hit_count} = $ftr->{quality}->{hit_count}+0;
-			}
-			if (defined($ftr->{annotations})) {
-				delete $ftr->{annotations};
-			}
-			if (defined($ftr->{location})) {
-				$ftr->{location}->[0]->[1] = $ftr->{location}->[0]->[1]+0;
-				$ftr->{location}->[0]->[3] = $ftr->{location}->[0]->[3]+0;
-			}
-			delete $ftr->{feature_creation_event};
-			if (defined($ftr->{function}) && length($ftr->{function}) > 0 && defined($ftr->{protein_translation})) {
-				for (my $j=0; $j < @{$genome->{features}}; $j++) {
-					if ($i ne $j) {
-						if ($ftr->{location}->[0]->[0] eq $genome->{features}->[$j]->{location}->[0]->[0]) {
-							if ($ftr->{location}->[0]->[1] == $genome->{features}->[$j]->{location}->[0]->[1]) {
-								if ($ftr->{location}->[0]->[2] eq $genome->{features}->[$j]->{location}->[0]->[2]) {
-									if ($ftr->{location}->[0]->[3] == $genome->{features}->[$j]->{location}->[0]->[3]) {
-										if ($ftr->{type} ne $genome->{features}->[$j]->{type}) {
-											$genome->{features}->[$j]->{function} = $ftr->{function};
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		for (my $i=0; $i < @{$genome->{features}}; $i++) {
-			my $ftr = $genome->{features}->[$i];
-			if (defined($oldfunchash->{$ftr->{id}}) && (!defined($ftr->{function}) || $ftr->{function} =~ /hypothetical\sprotein/)) {
-				if (defined($parameters->{retain_old_anno_for_hypotheticals}) && $parameters->{retain_old_anno_for_hypotheticals} == 1)	{
-					$ftr->{function} = $oldfunchash->{$ftr->{id}};
-				}
-			}
-			if (defined($ftr->{function}) && length($ftr->{function}) > 0) {
-				my $function = $ftr->{function};
-				my $array = [split(/\#/,$function)];
-				$function = shift(@{$array});
-				$function =~ s/\s+$//;
-				$array = [split(/\s*;\s+|\s+[\@\/]\s+/,$function)];
-				my $marked = 0;
-				for (my $j=0;$j < @{$array}; $j++) {
-					my $rolename = lc($array->[$j]);
-					$rolename =~ s/[\d\-]+\.[\d\-]+\.[\d\-]+\.[\d\-]+//g;
-					$rolename =~ s/\s//g;
-					$rolename =~ s/\#.*$//g;
-					$genomefunchash->{$rolename} = 1;
-					if (defined($funchash->{$rolename})) {
-						$seedfunchash->{$rolename} = 1;
-						if ($marked == 0) {
-							$seedfunctions++;
-							$marked = 1;
-						}
-						my $ont_term = $ftr->{ontology_terms}->{SSO}->{$funchash->{$rolename}->{id}};
-						if (!defined($ftr->{ontology_terms}->{SSO}->{$funchash->{$rolename}->{id}})) {
-							$ftr->{ontology_terms}->{SSO}->{$funchash->{$rolename}->{id}} = {
-								 evidence => [],
-								 id => $funchash->{$rolename}->{id},
-								 term_name => $funchash->{$rolename}->{name},
-								 ontology_ref => "KBaseOntology/seed_subsystem_ontology",
-								 term_lineage => [],
-							};
-						}
-						my $found = 0;
-						if (ref($ont_term) eq 'ARRAY'){
-							push(@{$ont_term}, $#{$inputgenome->{ontology_events}});
-						} else {
-							for (my $k = 0; $k < @{$ftr->{ontology_terms}->{SSO}->{$funchash->{$rolename}->{id}}->{evidence}}; $k++) {
-								if ($ftr->{ontology_terms}->{SSO}->{$funchash->{$rolename}->{id}}->{evidence}->[$k]->{method} eq Bio::KBase::utilities::method()) {
-									$ftr->{ontology_terms}->{SSO}->{$funchash->{$rolename}->{id}}->{evidence}->[$k]->{timestamp} = Bio::KBase::utilities::timestamp();
-									$ftr->{ontology_terms}->{SSO}->{$funchash->{$rolename}->{id}}->{evidence}->[$k]->{method_version} = $self->util_version();
-									$found = 1;
-									last;
-								}
-							}
-							if ($found == 0) {
-								push(
-									@{$ftr->{ontology_terms}->{SSO}->{$funchash->{$rolename}->{id}}->{evidence}},
-									{
-										method         => Bio::KBase::utilities::method(),
-										method_version => $self->util_version(),
-										timestamp      => Bio::KBase::utilities::timestamp()
-									});
-							}
-						}
-						if (exists ($ftr->{ontology_terms}->{SSO})) {
-							foreach my $sso (keys($ftr->{ontology_terms}->{SSO})) {
-								if ($sso =~ /SSO:000009304/) {
-									$advancedmessage .= "Found selenocysteine-containing gene $ftr->{ontology_terms}->{SSO}->{$sso}\n";
-								}
-								elsif ($sso =~ /SSO:000009291/) {
-									$advancedmessage .= "Found pyrrolysine-containing gene $ftr->{ontology_terms}->{SSO}->{$sso}\n";
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+    if (defined($contigobj) && defined($contigobj->{contigs}) && scalar(@{$contigobj->{contigs}})>0 ) {
+        $genome->{num_contigs} = @{$contigobj->{contigs}};
+        $genome->{md5} = $contigobj->{md5};
+    }
+    #Getting the seed ontology dictionary
+    #Sam: I need to build the PlantSEED ontology and use it here
+    my $output = Bio::KBase::kbaseenv::get_objects([{
+        workspace => "KBaseOntology",
+        name => "seed_subsystem_ontology"
+    }]);
+    #Building a hash of standardized seed function strings
+    my $funchash = {};
+    foreach my $term (keys(%{$output->[0]->{data}->{term_hash}})) {
+        my $rolename = lc($output->[0]->{data}->{term_hash}->{$term}->{name});
+        $rolename =~ s/[\d\-]+\.[\d\-]+\.[\d\-]+\.[\d\-]+//g;
+        $rolename =~ s/\s//g;
+        $rolename =~ s/\#.*$//g;
+        $funchash->{$rolename} = $output->[0]->{data}->{term_hash}->{$term};
+    }
+    my $newftrs = 0;
+    my $newncfs = 0;
+    my $update_cdss = 'N';
+    my $proteins = 0;
+    my $others = 0;
+    my $seedfunctions = 0;
+    my $genomefunchash;
+    my $seedfunchash;
+    my $advancedmessage = '';
+    %types = ();
+    if (defined($genome->{features})) {
+        for (my $i=0; $i < @{$genome->{features}}; $i++) {
+            my $ftr = $genome->{features}->[$i];
+            if (defined($genehash) && !defined($genehash->{$ftr->{id}})) {
+                # Let's count number of features with functions updated by RAST service.
+                # If function is not set we treat it as empty string to avoid perl warning.
+                $newftrs++;
+                my $func = $ftr->{function};
+                if (not defined($func)) {
+                    $func = "";
+                }
+                if ($ftr->{type} eq 'CDS' && !defined($genome->{cdss}->[$i])) {
+                    #Some of the optional gene finders don't respect new genome format
+                    #They may not have the cdss
+                    $update_cdss = 'Y';
+                }
+            } else {
+                $num_coding++;
+            }
+            if (!defined($ftr->{type}) && $ftr->{id} =~ m/(\w+)\.\d+$/) {
+                $ftr->{type} = $1;
+            }
+            if (defined($ftr->{protein_translation})) {
+                $ftr->{protein_translation_length} = length($ftr->{protein_translation})+0;
+                $ftr->{md5} = Digest::MD5::md5_hex($ftr->{protein_translation});
+                $proteins++;
+            } else {
+                $others++;
+            }
+            if (defined($ftr->{dna_sequence})) {
+                $ftr->{dna_sequence_length} = length($ftr->{dna_sequence})+0;
+            }
+            if (defined($ftr->{quality}->{weighted_hit_count})) {
+                $ftr->{quality}->{weighted_hit_count} = $ftr->{quality}->{weighted_hit_count}+0;
+            }
+            if (defined($ftr->{quality}->{hit_count})) {
+                $ftr->{quality}->{hit_count} = $ftr->{quality}->{hit_count}+0;
+            }
+            if (defined($ftr->{annotations})) {
+                delete $ftr->{annotations};
+            }
+            if (defined($ftr->{location})) {
+                $ftr->{location}->[0]->[1] = $ftr->{location}->[0]->[1]+0;
+                $ftr->{location}->[0]->[3] = $ftr->{location}->[0]->[3]+0;
+            }
+            delete $ftr->{feature_creation_event};
+            if (defined($ftr->{function}) && length($ftr->{function}) > 0 && defined($ftr->{protein_translation})) {
+                for (my $j=0; $j < @{$genome->{features}}; $j++) {
+                    if ($i ne $j) {
+                        if ($ftr->{location}->[0]->[0] eq $genome->{features}->[$j]->{location}->[0]->[0]) {
+                            if ($ftr->{location}->[0]->[1] == $genome->{features}->[$j]->{location}->[0]->[1]) {
+                                if ($ftr->{location}->[0]->[2] eq $genome->{features}->[$j]->{location}->[0]->[2]) {
+                                    if ($ftr->{location}->[0]->[3] == $genome->{features}->[$j]->{location}->[0]->[3]) {
+                                        if ($ftr->{type} ne $genome->{features}->[$j]->{type}) {
+                                            $genome->{features}->[$j]->{function} = $ftr->{function};
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for (my $i=0; $i < @{$genome->{features}}; $i++) {
+            my $ftr = $genome->{features}->[$i];
+            if (defined($oldfunchash->{$ftr->{id}}) && (!defined($ftr->{function}) || $ftr->{function} =~ /hypothetical\sprotein/)) {
+                if (defined($parameters->{retain_old_anno_for_hypotheticals}) && $parameters->{retain_old_anno_for_hypotheticals} == 1) {
+                    $ftr->{function} = $oldfunchash->{$ftr->{id}};
+                }
+            }
+            if (defined($ftr->{function}) && length($ftr->{function}) > 0) {
+                my $function = $ftr->{function};
+                my $array = [split(/\#/,$function)];
+                $function = shift(@{$array});
+                $function =~ s/\s+$//;
+                $array = [split(/\s*;\s+|\s+[\@\/]\s+/,$function)];
+                my $marked = 0;
+                for (my $j=0;$j < @{$array}; $j++) {
+                    my $rolename = lc($array->[$j]);
+                    $rolename =~ s/[\d\-]+\.[\d\-]+\.[\d\-]+\.[\d\-]+//g;
+                    $rolename =~ s/\s//g;
+                    $rolename =~ s/\#.*$//g;
+                    $genomefunchash->{$rolename} = 1;
+                    if (defined($funchash->{$rolename})) {
+                        $seedfunchash->{$rolename} = 1;
+                        if ($marked == 0) {
+                            $seedfunctions++;
+                            $marked = 1;
+                        }
+                        my $ont_term = $ftr->{ontology_terms}->{SSO}->{$funchash->{$rolename}->{id}};
+                        if (!defined($ftr->{ontology_terms}->{SSO}->{$funchash->{$rolename}->{id}})) {
+                            $ftr->{ontology_terms}->{SSO}->{$funchash->{$rolename}->{id}} = {
+                                 evidence => [],
+                                 id => $funchash->{$rolename}->{id},
+                                 term_name => $funchash->{$rolename}->{name},
+                                 ontology_ref => "KBaseOntology/seed_subsystem_ontology",
+                                 term_lineage => [],
+                            };
+                        }
+                        my $found = 0;
+                        if (ref($ont_term) eq 'ARRAY'){
+                            push(@{$ont_term}, $#{$inputgenome->{ontology_events}});
+                        } else {
+                            for (my $k = 0; $k < @{$ftr->{ontology_terms}->{SSO}->{$funchash->{$rolename}->{id}}->{evidence}}; $k++) {
+                                if ($ftr->{ontology_terms}->{SSO}->{$funchash->{$rolename}->{id}}->{evidence}->[$k]->{method} eq Bio::KBase::utilities::method()) {
+                                    $ftr->{ontology_terms}->{SSO}->{$funchash->{$rolename}->{id}}->{evidence}->[$k]->{timestamp} = Bio::KBase::utilities::timestamp();
+                                    $ftr->{ontology_terms}->{SSO}->{$funchash->{$rolename}->{id}}->{evidence}->[$k]->{method_version} = $self->util_version();
+                                    $found = 1;
+                                    last;
+                                }
+                            }
+                            if ($found == 0) {
+                                push(
+                                    @{$ftr->{ontology_terms}->{SSO}->{$funchash->{$rolename}->{id}}->{evidence}},
+                                    {
+                                        method         => Bio::KBase::utilities::method(),
+                                        method_version => $self->util_version(),
+                                        timestamp      => Bio::KBase::utilities::timestamp()
+                                    });
+                            }
+                        }
+                        if (exists ($ftr->{ontology_terms}->{SSO})) {
+                            foreach my $sso (keys($ftr->{ontology_terms}->{SSO})) {
+                                if ($sso =~ /SSO:000009304/) {
+                                    $advancedmessage .= "Found selenocysteine-containing gene $ftr->{ontology_terms}->{SSO}->{$sso}\n";
+                                }
+                                elsif ($sso =~ /SSO:000009291/) {
+                                    $advancedmessage .= "Found pyrrolysine-containing gene $ftr->{ontology_terms}->{SSO}->{$sso}\n";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-		## Rolling protein features back from 'CDS' to 'gene':
-		for (my $i=0; $i < @{$genome->{features}}; $i++) {
-			my $ftr = $genome->{features}->[$i];
-			if ($ftr->{type} eq "CDS") {
-				$ftr->{type} = "gene"
-			}
-			if (exists $oldtype->{$ftr->{id}} && $oldtype->{$ftr->{id}} =~ /gene/) {
-				$ftr->{type} = $oldtype->{$ftr->{id}};
-			}
-			if (defined($ftr->{location})) {
-				$ftr->{location}->[0]->[1] = $ftr->{location}->[0]->[1]+0;
-				$ftr->{location}->[0]->[3] = $ftr->{location}->[0]->[3]+0;
-			}
-#			$ftr->{type} = 'gene';
-			my $type = '';
-			if ( defined$ftr->{type}) {
-				$type = 'Coding '.$ftr->{type};
-			} else {
-				$type = 'Coding ';
-			}
-			#	Count the output feature types
-			if (exists $types{$type}) {
-				$types{$type} += 1;
-			} else {
-				$types{$type} = 1;
-			}
-			delete $genome->{features}->[$i]->{type} if (exists $ftr->{type});
-			delete $genome->{features}->[$i]->{protein_md5} if (exists $ftr->{protein_md5});
-		}
-		if ((not defined($genome->{cdss})) || (not defined($genome->{mrnas})) || $update_cdss eq 'Y') {
-			## Reconstructing new feature arrays ('cdss' and 'mrnas') if they are not present:
-			my $cdss = [];
-			$genome->{cdss} = $cdss;
-			my $mrnas = [];
-			$genome->{mrnas} = $mrnas;
-			for (my $i=0; $i < @{$genome->{features}}; $i++) {
-				my $feature = $genome->{features}->[$i];
-				if (defined($feature->{protein_translation})) {
-					my $gene_id = $feature->{id};
-					my $cds_id = $gene_id . "_CDS";
-					my $mrna_id = $gene_id . "_mRNA";
-					my $location = $feature->{location};
-					my $md5 = $feature->{md5};
-					my $function = $feature->{function};
-					if (not defined($function)) {
-						$function = "";
-					}
-					my $ontology_terms = $feature->{ontology_terms};
-					if (not defined($ontology_terms)) {
-						$ontology_terms = {};
-					}
-					my $protein_translation = $feature->{protein_translation};
-					my $protein_translation_length = length($protein_translation);
-					my $aliases = [];
-					if (defined($feature->{aliases})) {
-						$aliases = $feature->{aliases};
-						# Found some pseudogenes that have wrong structure for aliases
-						if (ref($aliases) !~ /ARRAY/) {
-							$aliases = [$feature->{aliases}];
-						}
-					}
-					push(@{$cdss}, {
-						id => $cds_id,
-						location => $location,
-						md5 => $md5,
-						parent_gene => $gene_id,
-						parent_mrna => $mrna_id,
-						function => $function,
-						ontology_terms => $ontology_terms,
-						protein_translation => $protein_translation,
-						protein_translation_length => $protein_translation_length,
-						aliases => $aliases
-					});
-					push(@{$mrnas}, {
-						id => $mrna_id,
-						location => $location,
-						md5 => $md5,
-						parent_gene => $gene_id,
-						cds => $cds_id
-					});
-					$feature->{cdss} = [$cds_id];
-					$feature->{mrnas} = [$mrna_id];
-				}
-			}
-		}
-	}
-	my $num_non_coding = 0;
-	if (defined($genome->{non_coding_features})) {
-		for (my $i=0; $i < @{$genome->{non_coding_features}}; $i++) {
-			my $ftr = $genome->{non_coding_features}->[$i];
-			if (defined($genehash) && !defined($genehash->{$ftr->{id}})) {
-				# Let's count number of non_coding_features with functions updated by RAST service.
-				# If function is not set we treat it as empty string to avoid perl warning.
-				$newncfs++;
-				$newftrs++;
-				my $func = $ftr->{function};
-				if (not defined($func)) {
-					$func = "";
-				}
+        ## Rolling protein features back from 'CDS' to 'gene':
+        for (my $i=0; $i < @{$genome->{features}}; $i++) {
+            my $ftr = $genome->{features}->[$i];
+            if ($ftr->{type} eq "CDS") {
+                $ftr->{type} = "gene"
+            }
+            if (exists $oldtype->{$ftr->{id}} && $oldtype->{$ftr->{id}} =~ /gene/) {
+                $ftr->{type} = $oldtype->{$ftr->{id}};
+            }
+            if (defined($ftr->{location})) {
+                $ftr->{location}->[0]->[1] = $ftr->{location}->[0]->[1]+0;
+                $ftr->{location}->[0]->[3] = $ftr->{location}->[0]->[3]+0;
+            }
+#           $ftr->{type} = 'gene';
+            my $type = '';
+            if ( defined$ftr->{type}) {
+                $type = 'Coding '.$ftr->{type};
+            } else {
+                $type = 'Coding ';
+            }
+            #   Count the output feature types
+            if (exists $types{$type}) {
+                $types{$type} += 1;
+            } else {
+                $types{$type} = 1;
+            }
+            delete $genome->{features}->[$i]->{type} if (exists $ftr->{type});
+            delete $genome->{features}->[$i]->{protein_md5} if (exists $ftr->{protein_md5});
+        }
+        if ((not defined($genome->{cdss})) || (not defined($genome->{mrnas})) || $update_cdss eq 'Y') {
+            ## Reconstructing new feature arrays ('cdss' and 'mrnas') if they are not present:
+            my $cdss = [];
+            $genome->{cdss} = $cdss;
+            my $mrnas = [];
+            $genome->{mrnas} = $mrnas;
+            for (my $i=0; $i < @{$genome->{features}}; $i++) {
+                my $feature = $genome->{features}->[$i];
+                if (defined($feature->{protein_translation})) {
+                    my $gene_id = $feature->{id};
+                    my $cds_id = $gene_id . "_CDS";
+                    my $mrna_id = $gene_id . "_mRNA";
+                    my $location = $feature->{location};
+                    my $md5 = $feature->{md5};
+                    my $function = $feature->{function};
+                    if (not defined($function)) {
+                        $function = "";
+                    }
+                    my $ontology_terms = $feature->{ontology_terms};
+                    if (not defined($ontology_terms)) {
+                        $ontology_terms = {};
+                    }
+                    my $protein_translation = $feature->{protein_translation};
+                    my $protein_translation_length = length($protein_translation);
+                    my $aliases = [];
+                    if (defined($feature->{aliases})) {
+                        $aliases = $feature->{aliases};
+                        # Found some pseudogenes that have wrong structure for aliases
+                        if (ref($aliases) !~ /ARRAY/) {
+                            $aliases = [$feature->{aliases}];
+                        }
+                    }
+                    push(@{$cdss}, {
+                        id => $cds_id,
+                        location => $location,
+                        md5 => $md5,
+                        parent_gene => $gene_id,
+                        parent_mrna => $mrna_id,
+                        function => $function,
+                        ontology_terms => $ontology_terms,
+                        protein_translation => $protein_translation,
+                        protein_translation_length => $protein_translation_length,
+                        aliases => $aliases
+                    });
+                    push(@{$mrnas}, {
+                        id => $mrna_id,
+                        location => $location,
+                        md5 => $md5,
+                        parent_gene => $gene_id,
+                        cds => $cds_id
+                    });
+                    $feature->{cdss} = [$cds_id];
+                    $feature->{mrnas} = [$mrna_id];
+                }
+            }
+        }
+    }
+    my $num_non_coding = 0;
+    if (defined($genome->{non_coding_features})) {
+        for (my $i=0; $i < @{$genome->{non_coding_features}}; $i++) {
+            my $ftr = $genome->{non_coding_features}->[$i];
+            if (defined($genehash) && !defined($genehash->{$ftr->{id}})) {
+                # Let's count number of non_coding_features with functions updated by RAST service.
+                # If function is not set we treat it as empty string to avoid perl warning.
+                $newncfs++;
+                $newftrs++;
+                my $func = $ftr->{function};
+                if (not defined($func)) {
+                    $func = "";
+                }
 
-			} else {
-				$num_non_coding++;
-			}
-			my $type = '';
-			if ( defined$ftr->{type} && $ftr->{type} =~ /coding/) {
-				$type = $ftr->{type} ;
-			} elsif (defined$ftr->{type}) {
-				$type = 'Non-coding '.$ftr->{type} ;
-			} else {
-				$type = 'Non-coding ';
-			}
-			#	Count the output feature types
-			if (exists $types{$type}) {
-				$types{$type} += 1;
-			} else {
-				$types{$type} = 1;
-			}
-		}
-	}
-	if (defined($inputgenome)) {
-		$message .= "In addition to the remaining original $num_coding coding features and $num_non_coding non-coding features, ".$newftrs." new features were called, of which $newncfs are non-coding.\n";
-		if  (%types) {
-			$message .= "Output genome has the following feature types:\n";
-			for my $key (sort keys(%types)) {
-				$message .= sprintf("\t%-30s %5d \n", $key, $types{$key});
-			}
-		}
-	}
+            } else {
+                $num_non_coding++;
+            }
+            my $type = '';
+            if ( defined$ftr->{type} && $ftr->{type} =~ /coding/) {
+                $type = $ftr->{type} ;
+            } elsif (defined$ftr->{type}) {
+                $type = 'Non-coding '.$ftr->{type} ;
+            } else {
+                $type = 'Non-coding ';
+            }
+            #   Count the output feature types
+            if (exists $types{$type}) {
+                $types{$type} += 1;
+            } else {
+                $types{$type} = 1;
+            }
+        }
+    }
+    if (defined($inputgenome)) {
+        $message .= "In addition to the remaining original $num_coding coding features and $num_non_coding non-coding features, ".$newftrs." new features were called, of which $newncfs are non-coding.\n";
+        if  (%types) {
+            $message .= "Output genome has the following feature types:\n";
+            for my $key (sort keys(%types)) {
+                $message .= sprintf("\t%-30s %5d \n", $key, $types{$key});
+            }
+        }
+    }
 
-	$message .= "Overall, the genes have ".keys(%{$genomefunchash})." distinct functions. \nThe genes include ".$seedfunctions." genes with a SEED annotation ontology across ".keys(%{$seedfunchash})." distinct SEED functions.\n";
-	$message .= "The number of distinct functions can exceed the number of genes because some genes have multiple functions.\n";
-	print($message);
-	if (!defined($genome->{assembly_ref})) {
-		delete $genome->{assembly_ref};
-	}
-	if (defined($contigobj)) {
-		$genome->{gc_content} = $contigobj->{_gc};
-		if ($contigobj->{_kbasetype} eq "ContigSet") {
-			$genome->{contigset_ref} = $contigobj->{_reference};
-		} else {
-			$genome->{assembly_ref} = $contigobj->{_reference};
-		}
-	}
-#	print "SEND OFF FOR SAVING\n";
-#	print "***** Domain       = $genome->{domain}\n";
-#	print "***** Genitic_code = $genome->{genetic_code}\n";
-#	print "***** Scientific_namee = $genome->{scientific_name}\n";
-#	print "***** Number of features=".scalar  @{$genome->{features}}."\n";
-#	print "***** Number of non_coding_features=".scalar  @{$genome->{non_coding_features}}."\n";
-#	print "***** Number of cdss=    ".scalar  @{$genome->{cdss}}."\n";
-#	print "***** Number of mrnas=   ".scalar  @{$genome->{mrnas}}."\n";
-	my $gaout = Bio::KBase::kbaseenv::gfu_client()->save_one_genome({
-		workspace => $parameters->{workspace},
+    $message .= "Overall, the genes have ".keys(%{$genomefunchash})." distinct functions. \nThe genes include ".$seedfunctions." genes with a SEED annotation ontology across ".keys(%{$seedfunchash})." distinct SEED functions.\n";
+    $message .= "The number of distinct functions can exceed the number of genes because some genes have multiple functions.\n";
+    print($message);
+    if (!defined($genome->{assembly_ref})) {
+        delete $genome->{assembly_ref};
+    }
+    if (defined($contigobj)) {
+        $genome->{gc_content} = $contigobj->{_gc};
+        if ($contigobj->{_kbasetype} eq "ContigSet") {
+            $genome->{contigset_ref} = $contigobj->{_reference};
+        } else {
+            $genome->{assembly_ref} = $contigobj->{_reference};
+        }
+    }
+#   print "SEND OFF FOR SAVING\n";
+#   print "***** Domain       = $genome->{domain}\n";
+#   print "***** Genitic_code = $genome->{genetic_code}\n";
+#   print "***** Scientific_namee = $genome->{scientific_name}\n";
+#   print "***** Number of features=".scalar  @{$genome->{features}}."\n";
+#   print "***** Number of non_coding_features=".scalar  @{$genome->{non_coding_features}}."\n";
+#   print "***** Number of cdss=    ".scalar  @{$genome->{cdss}}."\n";
+#   print "***** Number of mrnas=   ".scalar  @{$genome->{mrnas}}."\n";
+    my $gaout = Bio::KBase::kbaseenv::gfu_client()->save_one_genome({
+        workspace => $parameters->{workspace},
         name => $parameters->{output_genome},
         data => $genome,
         provenance => [{
-			"time" => DateTime->now()->datetime()."+0000",
-			service_ver => $self->util_version(),
-			service => "RAST_SDK",
-			method => Bio::KBase::utilities::method(),
-			method_params => [$parameters],
-			input_ws_objects => [],
-			resolved_ws_objects => [],
-			intermediate_incoming => [],
-			intermediate_outgoing => []
-		}],
+            "time" => DateTime->now()->datetime()."+0000",
+            service_ver => $self->util_version(),
+            service => "RAST_SDK",
+            method => Bio::KBase::utilities::method(),
+            method_params => [$parameters],
+            input_ws_objects => [],
+            resolved_ws_objects => [],
+            intermediate_incoming => [],
+            intermediate_outgoing => []
+        }],
         hidden => 0
-	});
-	Bio::KBase::kbaseenv::add_object_created({
-		"ref" => $gaout->{info}->[6]."/".$gaout->{info}->[0]."/".$gaout->{info}->[4],
-		"description" => "Annotated genome"
-	});
-	Bio::KBase::utilities::print_report_message({
-		message => "<pre>".$message."</pre>",
-		append => 0,
-		html => 0
-	});
-	return ({"ref" => $gaout->{info}->[6]."/".$gaout->{info}->[0]."/".$gaout->{info}->[4]},$message);
+    });
+    Bio::KBase::kbaseenv::add_object_created({
+        "ref" => $gaout->{info}->[6]."/".$gaout->{info}->[0]."/".$gaout->{info}->[4],
+        "description" => "Annotated genome"
+    });
+    Bio::KBase::utilities::print_report_message({
+        message => "<pre>".$message."</pre>",
+        append => 0,
+        html => 0
+    });
+    return ({"ref" => $gaout->{info}->[6]."/".$gaout->{info}->[0]."/".$gaout->{info}->[4]},$message);
 }
 
 # Get the scientific name for a NCBI taxon.
@@ -1123,7 +1123,7 @@ sub new
 
     if ($self->can('_init_instance'))
     {
-	$self->_init_instance();
+    $self->_init_instance();
     }
     return $self;
 }
@@ -1177,10 +1177,10 @@ genome_id is a string
 contigset_id is a string
 bool is an int
 AnnotateGenomeResults is a reference to a hash where the following keys are defined:
-	workspace has a value which is a RAST_SDK.workspace_name
-	id has a value which is a string
-	report_name has a value which is a string
-	report_ref has a value which is a string
+    workspace has a value which is a RAST_SDK.workspace_name
+    id has a value which is a string
+    report_name has a value which is a string
+    report_ref has a value which is a string
 workspace_name is a string
 
 </pre>
@@ -1223,10 +1223,10 @@ genome_id is a string
 contigset_id is a string
 bool is an int
 AnnotateGenomeResults is a reference to a hash where the following keys are defined:
-	workspace has a value which is a RAST_SDK.workspace_name
-	id has a value which is a string
-	report_name has a value which is a string
-	report_ref has a value which is a string
+    workspace has a value which is a RAST_SDK.workspace_name
+    id has a value which is a string
+    report_name has a value which is a string
+    report_ref has a value which is a string
 workspace_name is a string
 
 
@@ -1251,9 +1251,9 @@ sub annotate_genome
     my @_bad_arguments;
     (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
     if (@_bad_arguments) {
-	my $msg = "Invalid arguments passed to annotate_genome:\n" . join("", map { "\t$_\n" } @_bad_arguments);
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-							       method_name => 'annotate_genome');
+    my $msg = "Invalid arguments passed to annotate_genome:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+                                   method_name => 'annotate_genome');
     }
 
     my $ctx = $RAST_SDK::RAST_SDKServer::CallContext;
@@ -1309,9 +1309,9 @@ sub annotate_genome
     my @_bad_returns;
     (ref($return) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
     if (@_bad_returns) {
-	my $msg = "Invalid returns passed to annotate_genome:\n" . join("", map { "\t$_\n" } @_bad_returns);
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-							       method_name => 'annotate_genome');
+    my $msg = "Invalid returns passed to annotate_genome:\n" . join("", map { "\t$_\n" } @_bad_returns);
+    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+                                   method_name => 'annotate_genome');
     }
     return($return);
 }
@@ -1361,19 +1361,19 @@ AnnotateGenomesParams is a reference to a hash where the following keys are defi
 	call_features_prophage_phispy has a value which is a RAST_SDK.bool
 	retain_old_anno_for_hypotheticals has a value which is a RAST_SDK.bool
 GenomeParams is a reference to a hash where the following keys are defined:
-	input_contigset has a value which is a RAST_SDK.contigset_id
-	input_genome has a value which is a RAST_SDK.genome_id
-	output_genome has a value which is a RAST_SDK.genome_id
-	genetic_code has a value which is an int
-	domain has a value which is a string
-	scientific_name has a value which is a string
+    input_contigset has a value which is a RAST_SDK.contigset_id
+    input_genome has a value which is a RAST_SDK.genome_id
+    output_genome has a value which is a RAST_SDK.genome_id
+    genetic_code has a value which is an int
+    domain has a value which is a string
+    scientific_name has a value which is a string
 contigset_id is a string
 genome_id is a string
 bool is an int
 AnnotateGenomesResults is a reference to a hash where the following keys are defined:
-	workspace has a value which is a RAST_SDK.workspace_name
-	report_name has a value which is a string
-	report_ref has a value which is a string
+    workspace has a value which is a RAST_SDK.workspace_name
+    report_name has a value which is a string
+    report_ref has a value which is a string
 workspace_name is a string
 
 </pre>
@@ -1413,19 +1413,19 @@ AnnotateGenomesParams is a reference to a hash where the following keys are defi
 	call_features_prophage_phispy has a value which is a RAST_SDK.bool
 	retain_old_anno_for_hypotheticals has a value which is a RAST_SDK.bool
 GenomeParams is a reference to a hash where the following keys are defined:
-	input_contigset has a value which is a RAST_SDK.contigset_id
-	input_genome has a value which is a RAST_SDK.genome_id
-	output_genome has a value which is a RAST_SDK.genome_id
-	genetic_code has a value which is an int
-	domain has a value which is a string
-	scientific_name has a value which is a string
+    input_contigset has a value which is a RAST_SDK.contigset_id
+    input_genome has a value which is a RAST_SDK.genome_id
+    output_genome has a value which is a RAST_SDK.genome_id
+    genetic_code has a value which is an int
+    domain has a value which is a string
+    scientific_name has a value which is a string
 contigset_id is a string
 genome_id is a string
 bool is an int
 AnnotateGenomesResults is a reference to a hash where the following keys are defined:
-	workspace has a value which is a RAST_SDK.workspace_name
-	report_name has a value which is a string
-	report_ref has a value which is a string
+    workspace has a value which is a RAST_SDK.workspace_name
+    report_name has a value which is a string
+    report_ref has a value which is a string
 workspace_name is a string
 
 
@@ -1450,9 +1450,9 @@ sub annotate_genomes
     my @_bad_arguments;
     (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
     if (@_bad_arguments) {
-	my $msg = "Invalid arguments passed to annotate_genomes:\n" . join("", map { "\t$_\n" } @_bad_arguments);
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-							       method_name => 'annotate_genomes');
+    my $msg = "Invalid arguments passed to annotate_genomes:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+                                   method_name => 'annotate_genomes');
     }
 
     my $ctx = $RAST_SDK::RAST_SDKServer::CallContext;
@@ -1664,8 +1664,8 @@ sub annotate_genomes
         message => $htmlmessage,html=>0,append => 0
     });
     my $reportout = Bio::KBase::kbaseenv::create_report({
-    	workspace_name => $params->{workspace},
-    	report_object_name => Bio::KBase::utilities::processid().".report",
+        workspace_name => $params->{workspace},
+        report_object_name => Bio::KBase::utilities::processid().".report",
     });
     $return = {
     	workspace => $params->{workspace},
@@ -1679,9 +1679,9 @@ sub annotate_genomes
     my @_bad_returns;
     (ref($return) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
     if (@_bad_returns) {
-	my $msg = "Invalid returns passed to annotate_genomes:\n" . join("", map { "\t$_\n" } @_bad_returns);
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-							       method_name => 'annotate_genomes');
+    my $msg = "Invalid returns passed to annotate_genomes:\n" . join("", map { "\t$_\n" } @_bad_returns);
+    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+                                   method_name => 'annotate_genomes');
     }
     return($return);
 }
@@ -1703,9 +1703,9 @@ sub annotate_genomes
 $params is a RAST_SDK.AnnotateProteinParams
 $return is a RAST_SDK.AnnotateProteinResults
 AnnotateProteinParams is a reference to a hash where the following keys are defined:
-	proteins has a value which is a reference to a list where each element is a string
+    proteins has a value which is a reference to a list where each element is a string
 AnnotateProteinResults is a reference to a hash where the following keys are defined:
-	functions has a value which is a reference to a list where each element is a reference to a list where each element is a string
+    functions has a value which is a reference to a list where each element is a reference to a list where each element is a string
 
 </pre>
 
@@ -1716,9 +1716,9 @@ AnnotateProteinResults is a reference to a hash where the following keys are def
 $params is a RAST_SDK.AnnotateProteinParams
 $return is a RAST_SDK.AnnotateProteinResults
 AnnotateProteinParams is a reference to a hash where the following keys are defined:
-	proteins has a value which is a reference to a list where each element is a string
+    proteins has a value which is a reference to a list where each element is a string
 AnnotateProteinResults is a reference to a hash where the following keys are defined:
-	functions has a value which is a reference to a list where each element is a reference to a list where each element is a string
+    functions has a value which is a reference to a list where each element is a reference to a list where each element is a string
 
 
 =end text
@@ -1741,9 +1741,9 @@ sub annotate_proteins
     my @_bad_arguments;
     (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
     if (@_bad_arguments) {
-	my $msg = "Invalid arguments passed to annotate_proteins:\n" . join("", map { "\t$_\n" } @_bad_arguments);
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-							       method_name => 'annotate_proteins');
+    my $msg = "Invalid arguments passed to annotate_proteins:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+                                   method_name => 'annotate_proteins');
     }
 
     my $ctx = $RAST_SDK::RAST_SDKServer::CallContext;
@@ -1752,36 +1752,35 @@ sub annotate_proteins
     $self->util_initialize_call($params,$ctx);
     $params = Bio::KBase::utilities::args($params,["proteins"],{});
     my $inputgenome = {
-    		features => []
+            features => []
     };
     for (my $i=1; $i <= @{$params->{proteins}}; $i++) {
-    		push(@{$inputgenome->{features}},{
-    			id => "peg.".$i,
-    			protein_translation => $params->{proteins}->[$i]
-    		});
+            push(@{$inputgenome->{features}},{
+                id => "peg.".$i,
+                protein_translation => $params->{proteins}->[$i]
+            });
     }
-
     my $gaserv = Bio::KBase::GenomeAnnotation::GenomeAnnotationImpl->new();
     my $genome = $gaserv->run_pipeline($inputgenome,[
-		{ name => 'annotate_proteins_kmer_v2', kmer_v2_parameters => {} },
-		#{ name => 'annotate_proteins_kmer_v1', kmer_v1_parameters => { annotate_hypothetical_only => 1 } },
-		{ name => 'annotate_proteins_similarity', similarity_parameters => { annotate_hypothetical_only => 1 } }
-	]);
-	my $ftrs = $genome->{features};
-	$return->{functions} = [];
-	for (my $i=0; $i < @{$genome->{features}}; $i++) {
-		$return->{functions}->[$i] = [];
-		if (defined($genome->{features}->[$i]->{function})) {
-			$return->{functions}->[$i] = [split(/\s*;\s+|\s+[\@\/]\s+/,$genome->{features}->[$i]->{function})];
-		}
-	}
+        { name => 'annotate_proteins_kmer_v2', kmer_v2_parameters => {} },
+        #{ name => 'annotate_proteins_kmer_v1', kmer_v1_parameters => { annotate_hypothetical_only => 1 } },
+        { name => 'annotate_proteins_similarity', similarity_parameters => { annotate_hypothetical_only => 1 } }
+    ]);
+    my $ftrs = $genome->{features};
+    $return->{functions} = [];
+    for (my $i=0; $i < @{$genome->{features}}; $i++) {
+        $return->{functions}->[$i] = [];
+        if (defined($genome->{features}->[$i]->{function})) {
+            $return->{functions}->[$i] = [split(/\s*;\s+|\s+[\@\/]\s+/,$genome->{features}->[$i]->{function})];
+        }
+    }
     #END annotate_proteins
     my @_bad_returns;
     (ref($return) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
     if (@_bad_returns) {
-	my $msg = "Invalid returns passed to annotate_proteins:\n" . join("", map { "\t$_\n" } @_bad_returns);
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-							       method_name => 'annotate_proteins');
+    my $msg = "Invalid returns passed to annotate_proteins:\n" . join("", map { "\t$_\n" } @_bad_returns);
+    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+                                   method_name => 'annotate_proteins');
     }
     return($return);
 }
@@ -2250,7 +2249,7 @@ sub rast_genomes_assemblies
 
 
 
-=head2 status 
+=head2 status
 
   $return = $obj->status()
 
@@ -2603,7 +2602,7 @@ Parameters for the annotate_genomes method.
                 relation_engine_timestamp_ms - the timestamp to send to the Relation Engine when looking
                         up taxon information in milliseconds since the epoch.
                 scientific_name - the scientific name of the genome. Overridden by ncbi_taxon_id.
-                
+
                 TODO: document remainder of parameters.
 
 
@@ -3103,7 +3102,7 @@ report_ref has a value which is a string
 =item Description
 
 For RAST annotating genomes/assemblies
- 
+
 Reference to a set of annotated Genome and/or Assembly objects in the workspace
 @id ws KBaseSearch.GenomeSet
 
