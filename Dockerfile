@@ -22,6 +22,7 @@ RUN \
 
 # install perl deps
 COPY ./cpanfile /kb/module/cpanfile
+WORKDIR /kb/module
 RUN cpanm --installdeps .
 
 # Build kb_seed
