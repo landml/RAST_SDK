@@ -32,14 +32,14 @@ print "         For this reason, the test isn't for a specific number of changes
 local $| = 1;
 my $token = $ENV{'KB_AUTH_TOKEN'};
 my $config_file = $ENV{'KB_DEPLOYMENT_CONFIG'};
-my $config = new Config::Simple($config_file)->get_block('RAST_SDK');
+my $config = Config::Simple->new($config_file)->get_block('RAST_SDK');
 my $ws_url = $config->{"workspace-url"};
 my $ws_name = undef;
-my $ws_client = new installed_clients::WorkspaceClient($ws_url,token => $token);
+my $ws_client = installed_clients::WorkspaceClient->new($ws_url,token => $token);
 my $call_back_url = $ENV{ SDK_CALLBACK_URL };
-my $au = new installed_clients::AssemblyUtilClient($call_back_url);
-my $gfu = new installed_clients::GenomeFileUtilClient($call_back_url);
-my $su = new installed_clients::kb_SetUtilitiesClient($call_back_url);
+my $au = installed_clients::AssemblyUtilClient->new($call_back_url);
+my $gfu = installed_clients::GenomeFileUtilClient->new($call_back_url);
+my $su = installed_clients::kb_SetUtilitiesClient->new($call_back_url);
 
 my $DEBUG = 'N';
 my $genome_obj_name1 = "Dactylopius_coccus";
