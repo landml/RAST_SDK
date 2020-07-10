@@ -1,9 +1,8 @@
-use strict;
-use warnings;
+use Test::Most;
+use RASTTestUtils;
+use Data::Dumper::Concise;
+use feature qw( say );
 
-use Data::Dumper;
-use Test::More;
-use Test::Exception;
 use Config::Simple;
 use Time::HiRes qw(time);
 use Workspace::WorkspaceClient;
@@ -14,8 +13,6 @@ use installed_clients::GenomeFileUtilClient;
 use Storable qw(dclone);
 use Bio::KBase::kbaseenv;
 
-use lib "/kb/module/test";
-use testRASTutil;
 local $| = 1;
 my $token = $ENV{'KB_AUTH_TOKEN'};
 my $config_file = $ENV{'KB_DEPLOYMENT_CONFIG'};

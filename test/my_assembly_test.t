@@ -1,10 +1,8 @@
-use strict;
-use warnings;
+use Test::Most;
+use RASTTestUtils;
+use Data::Dumper::Concise;
+use feature qw( say );
 
-use Data::Dumper;
-use Test::Deep;
-use Test::More;
-use Test::Exception;
 use Config::Simple;
 use Time::HiRes qw(time);
 use installed_clients::WorkspaceClient;
@@ -13,9 +11,6 @@ use File::Copy;
 use installed_clients::GenomeAnnotationAPIClient;
 use Storable qw(dclone);
 use File::Slurp;
-
-use lib "/kb/module/test";
-use testRASTutil;
 
 print "PURPOSE:\n";
 print "    1.  Test annotation of one small assembly. \n";
@@ -49,13 +44,18 @@ $params = &set_params($genome_obj_name,$params);
 
 # Test processing a single assembly and saving as a genome.
 lives_ok {
-	print("######## Running RAST annotation ########\n");
-	my $ret = &make_impl_call("RAST_SDK.annotate_genome", $params);
-	my $genome_ref = get_ws_name() . "/" . $genome_obj_name;
-	my $genome_obj = $ws_client->get_objects([{ref=>$genome_ref}])->[0]->{data};
 
-	print "\n\nOUTPUT OBJECT DOMAIN = $genome_obj->{domain}\n";
-	print "OUTPUT OBJECT G_CODE = $genome_obj->{genetic_code}\n";
+subtest 'Running RAST annotation' => sub {
+
+    lives_ok {
+        make_impl_call("RAST_SDK.annotate_genome", $params);
+    }, 'annotate_genome runs successfully';
+
+    my $genome_ref =  get_ws_name() . "/" . $genome_obj_name;
+    my $genome_obj =  $ws_client->get_objects([{ref=>$genome_ref}])->[0]->{data};
+
+    say "\n\nOUTPUT OBJECT DOMAIN = $genome_obj->{domain}";
+    say "OUTPUT OBJECT G_CODE = $genome_obj->{genetic_code}\n";
 
     ok(defined($genome_obj->{features}), "Features array is present");
     ok(scalar @{ $genome_obj->{features} } gt 0, "Number of features");
@@ -65,12 +65,11 @@ lives_ok {
     ok(scalar @{ $genome_obj->{mrnas} } gt 0, "Number of mRNAs");
     ok($genome_obj->{scientific_name} eq "Acidilobus sp 7", "Sci name is correct");
     ok(!defined($genome_obj->{taxon_assignments}), "Taxon assignments is undefined");
-}, "test_annotate_assembly";
-print "Summary for $assembly_obj_name\n";
+};
 
 # Test processing a single assembly and saving as a genome while specifing a NCBI taxon ID.
-lives_ok {
-	print("######## Running RAST annotation with Taxon ID ########\n");
+subtest 'Running RAST annotation with Taxon ID' => sub {
+
     my $params_copy = { %$params };
     # this tax ID's species name changed in the 2018-12 NCBI dump and again in the 2019-02 dump
     # so it is a good test case for making sure the timestamp is passed to the RE correctly.
@@ -78,12 +77,14 @@ lives_ok {
     $params_copy->{ncbi_taxon_id} = 2448083;
     $params_copy->{relation_engine_timestamp_ms} = 1545000000000;  # epoch ms
 
-	my $ret = &make_impl_call("RAST_SDK.annotate_genome", $params_copy);
-	my $genome_ref = get_ws_name() . "/" . $genome_obj_name;
-	my $genome_obj = $ws_client->get_objects([{ref=>$genome_ref}])->[0]->{data};
+    lives_ok {
+        make_impl_call("RAST_SDK.annotate_genome", $params_copy);
+    }, 'annotate_genomes runs successfully';
+    my $genome_ref = get_ws_name() . "/" . $genome_obj_name;
+    my $genome_obj = $ws_client->get_objects([{ref=>$genome_ref}])->[0]->{data};
 
-	print "\n\nOUTPUT OBJECT DOMAIN = $genome_obj->{domain}\n";
-	print "OUTPUT OBJECT G_CODE = $genome_obj->{genetic_code}\n";
+    say "\n\nOUTPUT OBJECT DOMAIN = $genome_obj->{domain}";
+    say "OUTPUT OBJECT G_CODE = $genome_obj->{genetic_code}\n";
 
     ok(defined($genome_obj->{features}), "Features array is present");
     ok(scalar @{ $genome_obj->{features} } gt 0, "Number of features");
@@ -91,25 +92,27 @@ lives_ok {
     ok(scalar @{ $genome_obj->{cdss} } gt 0, "Number of CDSs");
     ok(defined($genome_obj->{mrnas}), "mRNAs array is present");
     ok(scalar @{ $genome_obj->{mrnas} } gt 0, "Number of mRNAs");
-    ok($genome_obj->{scientific_name} eq "Metarhizium sp. MJH 2018c", "Sci name is correct");
-    cmp_deeply($genome_obj->{taxon_assignments}, {'ncbi' => '2448083'},
-        "Taxon assignments is correct");
-}, "test_annotate_assembly";
-print "Summary for $assembly_obj_name\n";
+    is $genome_obj->{scientific_name}, "Metarhizium sp. MJH 2018c", "Sci name is correct";
+    cmp_deeply
+        $genome_obj->{taxon_assignments},
+        {'ncbi' => '2448083'},
+        "Taxon assignments are correct";
 
-print "ASSEMBLYREF = $assembly_ref\n";
-# Test processing a single assembly and saving as a genome set.
-lives_ok {
-    print("######## Running RAST annotation into GenomeSet ########\n");
+};
+
+subtest 'RAST annotation into GenomeSet' => sub {
+    # Test processing a single assembly and saving as a genome set.
+
     my $genome_set_name = "New_GenomeSet";
-	my $params={"input_genomes"=>[$assembly_ref],
-             "call_features_tRNA_trnascan"=>'1',
-			"output_genome"=>$genome_set_name
-           };
+    my $params = {
+        "input_genomes"=>[$assembly_ref],
+        "call_features_tRNA_trnascan"=>'1',
+        "output_genome"=>$genome_set_name
+    };
 
-	my ($genome_set_obj,$params) = &submit_set_annotation($genome_set_name, $params->{input_genomes}, $params);
-	my $data = $ws_client->get_objects([{ref=>$genome_set_obj}])->[0]->{refs};
-	my $number_genomes = scalar @{ $data};
+    my ($genome_set_obj,$params) = &submit_set_annotation($genome_set_name, $params->{input_genomes}, $params);
+    my $data = $ws_client->get_objects([{ref=>$genome_set_obj}])->[0]->{refs};
+    my $number_genomes = scalar @{ $data};
     ok($number_genomes == 1, "Input: One Assembly. Output: $number_genomes in output GenomeSet");
 
     my $genome_obj = $ws_client->get_objects([{ref=>$data->[0]}])->[0]->{data};
@@ -125,12 +128,12 @@ lives_ok {
 
     copy $report, $local_path or die "copy failed: $!";
 
-	ok(-e $local_path,'File found');
-} "Create a Report";
+    ok(-e $local_path,'File found');
+
+};
 
 # Test processing a single assembly with a taxon ID and saving as a genome set.
-lives_ok {
-    print("######## Running RAST annotation into GenomeSet with Taxon ID ########\n");
+subtest 'Running RAST annotation into GenomeSet with Taxon ID' => sub {
     my $genome_set_name = "New_GenomeSet2";
     my $params={"input_genomes"=>[$assembly_ref],
                 "call_features_tRNA_trnascan"=>'1',
@@ -143,13 +146,16 @@ lives_ok {
                 "relation_engine_timestamp_ms"=>1545000000000  # epoch ms
                 };
 
-	my ($genome_set_obj,$params) = &submit_set_annotation($genome_set_name, $params->{input_genomes}, $params);
-	my $data = $ws_client->get_objects([{ref=>$genome_set_obj}])->[0]->{refs};
-	my $number_genomes = scalar @{ $data};
+    my ($genome_set_obj,$params) = &submit_set_annotation($genome_set_name, $params->{input_genomes}, $params);
+    my $data = $ws_client->get_objects([{ref=>$genome_set_obj}])->[0]->{refs};
+    my $number_genomes = scalar @{ $data};
     ok($number_genomes == 1, "Input: One Assembly. Output: $number_genomes in output GenomeSet");
 
     my $genome_obj = $ws_client->get_objects([{ref=>$data->[0]}])->[0]->{data};
-    ok($genome_obj->{scientific_name} eq "Metarhizium sp. MJH 2018c", "Sci name is correct");
+
+    is $genome_obj->{scientific_name},
+        "Metarhizium sp. MJH 2018c",
+        "Sci name is correct";
     cmp_deeply($genome_obj->{taxon_assignments}, {'ncbi' => '2448083'},
         "Taxon assignments is correct");
 
@@ -162,37 +168,31 @@ lives_ok {
 
     copy $report, $local_path or die "copy failed: $!";
 
-	ok(-e $local_path,'File found');
-} "Create a Report";
+    ok(-e $local_path,'File found');
+};
 
 # Test failing to contact the RE with bad input.
-lives_ok {
-    print("######## Running RAST annotation fail with bad RE input ########\n");
+subtest 'Running RAST annotation fail with bad RE input' => sub {
     my $params_copy = { %$params };
     $params_copy->{ncbi_taxon_id} = 32;
     $params_copy->{relation_engine_timestamp_ms} = 'Sept 19 2020';  # oops
-    eval {
-        &make_impl_call("RAST_SDK.annotate_genome", $params_copy);
-    };
     # the error here is a JSON string appended with a file and line number, and so can't be
     # decoded. Arrg.
-    ok(index($@, "Error contacting Relation Engine: 400 BAD REQUEST") != -1,
-        "Correct error message");
-} "Fail contacting RE";
+    throws_ok {
+        &make_impl_call("RAST_SDK.annotate_genome", $params_copy);
+    } qr/Error contacting Relation Engine: 400 BAD REQUEST/,
+        'annotate_genome fails with appropriate message'
+};
 
 # Test sending a non-existant taxon to the RE.
-lives_ok {
-    print("######## Running RAST annotation fail with bad tax ID ########\n");
+subtest 'Running RAST annotation fail with bad tax ID' => sub {
     my $params_copy = { %$params };
     $params_copy->{ncbi_taxon_id} = 1000000000000; # pretty sure there aren't 1T taxa
     $params_copy->{relation_engine_timestamp_ms} = 1572648527000;
-    eval {
+    throws_ok {
         &make_impl_call("RAST_SDK.annotate_genome", $params_copy);
-    };
-    # the error here is a JSON string appended with a file and line number, and so can't be
-    # decoded. Arrg.
-    ok(index($@, "No result from Relation Engine for NCBI taxonomy ID 1000000000000") != -1,
-        "Correct error message");
-} "Fail bad taxon ID";
+    }, qr/No result from Relation Engine for NCBI taxonomy ID 1000000000000/,
+        'annotate_genome fails with appropriate message';
+};
 
-done_testing(32);
+done_testing;

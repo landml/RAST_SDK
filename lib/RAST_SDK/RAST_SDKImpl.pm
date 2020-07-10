@@ -26,16 +26,15 @@ use Config::IniFiles;
 use warnings;
 use JSON::XS;
 use Digest::MD5;
-use Data::Dumper qw(Dumper);
+use Data::Dumper;
 use Getopt::Long;
 use Bio::KBase::GenomeAnnotation::GenomeAnnotationImpl;
 use Bio::KBase::GenomeAnnotation::Service;
 use LWP::UserAgent;
 use HTTP::Request;
 
-use lib '../lib';
-use metag_utils;
-use anno_utils;
+use RAST_SDK::AnnotationUtils;
+use RAST_SDK::MetagenomeUtils;
 
 
 #Initialization function for call
@@ -176,7 +175,7 @@ sub util_get_contigs {
 
 sub annotate_process {
     my ($self,$parameters, $config, $ctx) = @_;
-    my $ann_util = new anno_utils($config, $ctx);
+    my $ann_util = RAST_SDK::AnnotationUtils->new($config, $ctx);
 
     my $oldfunchash = {};
     my $contigID_hash = {};
@@ -1290,7 +1289,7 @@ sub annotate_genome
 	}
 
     my $config_file = $ENV{ KB_DEPLOYMENT_CONFIG };
-    my $config = new Config::Simple($config_file)->get_block('RAST_SDK');
+    my $config = Config::Simple->new($config_file)->get_block('RAST_SDK');
 
     my $output = $self->annotate_process($params, $config, $ctx);
     my $reportout = Bio::KBase::kbaseenv::create_report({
@@ -1619,7 +1618,7 @@ sub annotate_genomes
 
         eval {
             my $config_file = $ENV{ KB_DEPLOYMENT_CONFIG };
-            my $config = new Config::Simple($config_file)->get_block('RAST_SDK');
+            my $config = Config::Simple->new($config_file)->get_block('RAST_SDK');
             my ($output, $message) = $self->annotate_process($currentparams,
                                                              $config, $ctx);
             push(@$output_genomes,$output->{ref});
@@ -1874,9 +1873,9 @@ sub annotate_metagenome
     print "annotate_metagenome input parameter=\n". Dumper($params). "\n";
 
     my $config_file = $ENV{ KB_DEPLOYMENT_CONFIG };
-    my $config = new Config::Simple($config_file)->get_block('RAST_SDK');
+    my $config = Config::Simple->new($config_file)->get_block('RAST_SDK');
 
-    my $mg_util = new metag_utils($config, $ctx);
+    my $mg_util = RAST_SDK::MetagenomeUtils->new($config, $ctx);
     my $rast_out = $mg_util->rast_metagenome($params);
     $output = {
         output_metagenome_ref => $rast_out->{output_genome_ref},
@@ -1981,9 +1980,9 @@ sub annotate_metagenomes
     print "annotate_metagenomes input parameters=\n". Dumper($params). "\n";
 
     my $config_file = $ENV{ KB_DEPLOYMENT_CONFIG };
-    my $config = new Config::Simple($config_file)->get_block('RAST_SDK');
+    my $config = Config::Simple->new($config_file)->get_block('RAST_SDK');
 
-    my $mg_util = new metag_utils($config, $ctx);
+    my $mg_util = RAST_SDK::MetagenomeUtils->new($config, $ctx);
     my $rast_out = $mg_util->bulk_rast_metagenomes($params);
     $output = {
         output_AMASet_ref => $rast_out->{output_AMASet_ref},
@@ -2104,8 +2103,8 @@ sub rast_genome_assembly
 		$params->{ncbi_taxon_id}, $params->{relation_engine_timestamp_ms});
     }
     my $config_file = $ENV{ KB_DEPLOYMENT_CONFIG };
-    my $config = new Config::Simple($config_file)->get_block('RAST_SDK');
-    my $ann_util = new anno_utils($config, $ctx);
+    my $config = Config::Simple->new($config_file)->get_block('RAST_SDK');
+    my $ann_util = RAST_SDK::AnnotationUtils->new($config, $ctx);
     my $rast_out = $ann_util->rast_genome($params);
     $output = {
         output_genome_ref => $rast_out->{output_genome_ref},
@@ -2225,8 +2224,8 @@ sub rast_genomes_assemblies
 		$params->{ncbi_taxon_id}, $params->{relation_engine_timestamp_ms});
     }
     my $config_file = $ENV{ KB_DEPLOYMENT_CONFIG };
-    my $config = new Config::Simple($config_file)->get_block('RAST_SDK');
-    my $ann_util = new anno_utils($config, $ctx);
+    my $config = Config::Simple->new($config_file)->get_block('RAST_SDK');
+    my $ann_util = RAST_SDK::AnnotationUtils->new($config, $ctx);
     my $rast_out = $ann_util->bulk_rast_genomes($params);
     $output = {
         output_genome_ref => $rast_out->{output_genomeSet_ref},

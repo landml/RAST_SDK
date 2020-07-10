@@ -1,3 +1,5 @@
+package RASTTestUtils;
+
 use strict;
 use warnings;
 use JSON;

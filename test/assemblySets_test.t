@@ -1,9 +1,7 @@
-use strict;
-use warnings;
+use Test::Most;
+use RASTTestUtils;
+use Data::Dumper::Concise;
 
-use Data::Dumper;
-use Test::More;
-use Test::Exception;
 use Config::Simple;
 use Time::HiRes qw(time);
 use JSON;
@@ -14,9 +12,6 @@ use installed_clients::GenomeFileUtilClient;
 use installed_clients::kb_SetUtilitiesClient;
 use Storable qw(dclone);
 use Bio::KBase::kbaseenv;
-
-use lib "/kb/module/test";
-use testRASTutil;
 
 print "PURPOSE:\n";
 print "    1.  Test annotate Multiple Assemblies. \n";
