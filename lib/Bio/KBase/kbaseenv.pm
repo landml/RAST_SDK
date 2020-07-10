@@ -9,7 +9,7 @@ use installed_clients::KBaseReportClient;
 use installed_clients::WorkspaceClient;
 use installed_clients::GenomeAnnotationAPIClient;
 use installed_clients::GenomeFileUtilClient;
-use installed_clients::kb_SetUtilitiesClient . pm;
+use installed_clients::kb_SetUtilitiesClient;
 
 our $ws_client        = undef;
 our $ga_client        = undef;
