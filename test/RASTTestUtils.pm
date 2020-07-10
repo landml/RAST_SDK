@@ -42,7 +42,7 @@ sub get_ws_name {
     unless ( $ws_name ) {
         $ws_client = get_ws_client();
         my $suffix = int( time * 1000 );
-        $ws_name = 'test_kb_cytoscape_' . $suffix;
+        $ws_name = 'test_RAST_SDK_' . $suffix;
         my $resp = $ws_client->create_workspace( { workspace => $ws_name } );
         $ws_id = $resp->[ 0 ];
     }
@@ -71,9 +71,7 @@ sub make_impl_call {
     print $fh encode_json( $input );
     close $fh;
     my $output_path = "/kb/module/work/output.json";
-    if ( -e $output_path ) {
-        unlink( $output_path );
-    }
+    unlink $output_path if -e $output_path;
 
     # Run run_async.sh
     system( "sh", "/kb/module/scripts/run_async.sh" );
@@ -269,8 +267,9 @@ sub submit_annotation {
 
     my $report_ref  = $ret->{ report_ref };
     my $report_obj  = $ws_client->get_objects( [ { ref => $report_ref } ] )->[ 0 ]->{ data };
-    my $report_text = $report_obj->{ direct_html };
-    say $report_text;
+
+    say 'report text: ' . Dumper $report_obj->{ direct_html };
+
     $genome_ref     = get_ws_name() . "/" . $genome_obj_name;
     my $genome_obj  = $ws_client->get_objects( [ { ref => $genome_ref } ] )->[ 0 ]->{ data };
 

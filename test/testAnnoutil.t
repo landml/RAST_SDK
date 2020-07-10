@@ -10,7 +10,6 @@ use File::Compare;
 use Config::Simple;
 use Bio::KBase::AuthToken;
 
-use installed_clients::GenomeFileUtilClient;
 use RAST_SDK::RAST_SDKImpl;
 
 use_ok "RAST_SDK::AnnotationUtils";
@@ -62,8 +61,8 @@ my $trans_file = 'data/metag_test/translationfile';
 my %trans_tab;
 my $sco_tab = [];
 
-my $obj_Echinacea     = "55141/242/1";    #prod genome
-my $obj_Echinacea_ann = "55141/247/1";    #prod genome
+my $obj_Echinacea     = "55141/242/1";    # prod genome
+my $obj_Echinacea_ann = "55141/247/1";    # prod genome
 my $obj_Ecoli         = "55141/212/1";    # prod genome
 my $obj_Ecoli_ann     = "55141/252/1";    # prod genome
 my $obj_asmb          = "55141/243/1";    # prod assembly
