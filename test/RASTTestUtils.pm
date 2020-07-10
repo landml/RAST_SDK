@@ -53,6 +53,10 @@ sub get_setutils_client {
     $su //= installed_clients::kb_SetUtilitiesClient->new( $callback_url );
 }
 
+sub get_genome_file_util_client {
+    $gfu //= installed_clients::GenomeFileUtilClient->new( $call_back_url );
+}
+
 #--------------------------------------------
 #   Call the RAST annotation Impl file
 #   Create a JSON object of the parameters and submit

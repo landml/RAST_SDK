@@ -10,8 +10,6 @@ use File::Compare;
 use Config::Simple;
 use Bio::KBase::AuthToken;
 
-use installed_clients::WorkspaceClient;
-use installed_clients::GenomeFileUtilClient;
 use RAST_SDK::RAST_SDKImpl;
 
 use_ok "RAST_SDK::MetagenomeUtils";
@@ -60,7 +58,7 @@ sub generate_metagenome {
     copy( $fasta, $fasta_path ) || croak "Copy file failed: $!\n";
     copy( $gff,   $gff_path )   || croak "Copy file failed: $!\n";
 
-    my $gfu = installed_clients::GenomeFileUtilClient->new( $call_back_url );
+    my $gfu = RASTTestUtils::get_genome_file_util_client();
     my $mg  = $gfu->fasta_gff_to_metagenome( {
         "gff_file"               => { 'path' => $gff_path },
         "fasta_file"             => { 'path' => $fasta_path },
@@ -85,8 +83,7 @@ $gff_filename     = $mgutil->_write_gff_from_ama( $input_obj_ref );
 
 # fetch protein sequences and gene IDs from fasta and gff files
 $fasta_contents = $mgutil->_parse_fasta( $input_fasta_file );
-( $gff_contents, $attr_delimiter )
-    = $mgutil->_parse_gff( $gff_filename, $attr_delimiter );
+( $gff_contents, $attr_delimiter ) = $mgutil->_parse_gff( $gff_filename, $attr_delimiter );
 
 my $gene_seqs
     = $mgutil->_extract_cds_sequences_from_fasta( $fasta_contents, $gff_contents );
