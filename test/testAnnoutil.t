@@ -1879,23 +1879,6 @@ subtest 'annoutil_uniq_functions' => sub {
     cmp_deeply(sort @expected_array, @sorted_ret, 'unique array ref is correct');
 };
 
+RASTTestUtils::clean_up();
+
 done_testing();
-
-
-my $err = undef;
-if ($@) {
-    $err = $@;
-}
-eval {
-    if (defined($ws)) {
-        $ws_client->delete_workspace({workspace => $ws});
-        print("Test workspace was deleted\n");
-    }
-};
-if (defined($err)) {
-    if(ref($err) eq "Bio::KBase::Exceptions::KBaseException") {
-        die("Error while running tests: " . $err->trace->as_string);
-    } else {
-        die $err;
-    }
-}
