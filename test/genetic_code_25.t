@@ -36,7 +36,7 @@ $params = RASTTestUtils::set_params( $genome_obj_name, $params );
 subtest 'Running RAST annotation' => sub {
 
     RASTTestUtils::make_impl_call( "RAST_SDK.annotate_genome", $params );
-    my $genome_ref = RASTTestUtils::get_ws_name() . "/" . $genome_obj_name;
+    my $genome_ref = $ws_name . "/" . $genome_obj_name;
     my $genome_obj = $ws_client->get_objects( [ { ref => $genome_ref } ] )->[ 0 ]->{ data };
 
     print "\n\nOUTPUT OBJECT DOMAIN = $genome_obj->{domain}\n";
