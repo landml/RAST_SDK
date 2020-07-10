@@ -121,10 +121,6 @@ sub ga_client {
             refresh => 0
         } );
     if ( $parameters->{ refresh } == 1 || !defined( $ga_client ) ) {
-        require "GenomeAnnotationAPI/GenomeAnnotationAPIClient.pm";
-        require "GenomeFileUtil/GenomeFileUtilClient.pm";
-        require "AssemblyUtil/AssemblyUtilClient.pm";
-        require "installed_clients/kb_SetUtilitiesClient.pm";
         $ga_client = installed_clients::GenomeAnnotationAPIClient->new(
             Bio::KBase::utilities::utilconf( "call_back_url" ) );
     }
