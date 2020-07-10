@@ -2,6 +2,7 @@ use Test::Most;
 use RASTTestUtils;
 use Data::Dumper::Concise;
 use feature qw( say );
+use File::Copy;
 
 print "PURPOSE:\n";
 print "    1.  Test annotation of one small assembly. \n";

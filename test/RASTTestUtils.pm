@@ -1,5 +1,6 @@
 package RASTTestUtils;
 
+use Test::Most;
 use strict;
 use warnings;
 use feature qw( say );
